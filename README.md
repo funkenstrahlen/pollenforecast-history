@@ -35,11 +35,6 @@ Two caveats:
   the date. The root URL returns 404 by design — this is a data archive, not a website.
 - Responses are CDN-cached for 10 minutes (`cache-control: max-age=600`), so a snapshot
   taken moments ago may take up to that long to appear.
-- **The path changed on 2026-11-02.** Snapshots used to sit at the repository root and were
-  served as `/YYYYMMDD.json`; they now live in `data/`. The old URLs return 404 — GitHub
-  Pages cannot redirect without Jekyll, and Jekyll is disabled here. The move was needed
-  because GitHub's web UI truncates a directory listing at 1000 entries, which left
-  `README.md` invisible on the repository page as entry 2756 of 2756.
 
 ## File format
 
@@ -95,21 +90,6 @@ every file is authoritative for that file.
 
 Note also that a region without sub-regions carries `"partregion_id": -1` and an empty
 `"partregion_name"`.
-
-## How the archive is produced
-
-A cron job on a small shared host fetches
-[`s31fg.json`](https://opendata.dwd.de/climate_environment/health/alerts/s31fg.json)
-from DWD Open Data every day at 12:00 (Europe/Berlin) — DWD updates it at 11:00 — then
-commits it and pushes here. The script validates the download before committing, so a DWD
-outage leaves a gap rather than an empty or truncated file, and it alerts by mail when any
-step fails.
-
-Between 2023-03-24 and 2026-11-02 the push half of that job was broken: GitHub rotated the
-SSH host key it had leaked, the host still trusted the old one, and nothing logged or
-alerted. Collection never stopped, so no data was lost, but this repository stood still for
-three years until the backlog was pushed on 2026-11-02. The logging and alerting exist
-because of it.
 
 ## Data source and licence
 
