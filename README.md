@@ -15,17 +15,17 @@ so the past is queryable.
 Every snapshot is served over HTTPS via GitHub Pages:
 
 ```
-https://pollenflug.stefantrauth.de/YYYYMMDD.json
+https://pollenflug.stefantrauth.de/data/YYYYMMDD.json
 ```
 
 ```bash
-curl https://pollenflug.stefantrauth.de/20261102.json
+curl https://pollenflug.stefantrauth.de/data/20261102.json
 ```
 
 Served as `application/json; charset=utf-8`, so it is usable directly from the browser:
 
 ```js
-const res  = await fetch('https://pollenflug.stefantrauth.de/20261102.json')
+const res  = await fetch('https://pollenflug.stefantrauth.de/data/20261102.json')
 const data = await res.json()
 ```
 
@@ -35,11 +35,16 @@ Two caveats:
   the date. The root URL returns 404 by design — this is a data archive, not a website.
 - Responses are CDN-cached for 10 minutes (`cache-control: max-age=600`), so a snapshot
   taken moments ago may take up to that long to appear.
+- **The path changed on 2026-11-02.** Snapshots used to sit at the repository root and were
+  served as `/YYYYMMDD.json`; they now live in `data/`. The old URLs return 404 — GitHub
+  Pages cannot redirect without Jekyll, and Jekyll is disabled here. The move was needed
+  because GitHub's web UI truncates a directory listing at 1000 entries, which left
+  `README.md` invisible on the repository page as entry 2756 of 2756.
 
 ## File format
 
-One file per day, named `YYYYMMDD.json` after the day it was fetched. Each file is a
-**byte-for-byte copy** of what DWD served at that moment — nothing is normalised,
+One file per day in `data/`, named `YYYYMMDD.json` after the day it was fetched. Each file
+is a **byte-for-byte copy** of what DWD served at that moment — nothing is normalised,
 reformatted or corrected, so the archive stays faithful to the original even where DWD
 changed its own structure over the years.
 
